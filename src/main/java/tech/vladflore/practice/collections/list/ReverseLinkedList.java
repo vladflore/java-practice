@@ -42,7 +42,7 @@ public class ReverseLinkedList {
             if (head.getNext() != null) {
                 System.out.print(" ");
             } else {
-                System.out.println(" ");
+                System.out.println("");
             }
             head = head.getNext();
         }
