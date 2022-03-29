@@ -1,5 +1,6 @@
 package tech.vladflore.practice.collections.map;
 
+import java.util.AbstractMap;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumMap;
@@ -10,6 +11,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
@@ -175,6 +178,37 @@ public class Practice {
         }
         mutableMap.put("key1", "value1");
         System.out.println(unmodifiableMap.get("key1"));
+
+        System.out.println("===============================================");
+
+        Map<String, String> singletonMap = Collections.singletonMap("key", "value");
+        System.out.println(singletonMap);
+        Map<String, String> emptyMap = Collections.emptyMap();
+        System.out.println(emptyMap);
+
+        Map<String, String> m1 = Map.of("k1", "v1");
+        System.out.println(m1);
+
+        Map<String, String> m2 = Map.ofEntries(
+                new AbstractMap.SimpleEntry<>("key1", "value1"),
+                new AbstractMap.SimpleEntry<>("key2", "value2"));
+        System.out.println(m2);
+
+        Map<String, String> m3 = Stream.of(
+                new String[][] {
+                        { "en", "hello" },
+                        { "de", "hallo" }
+                })
+                // .peek(data -> System.out.println(Arrays.toString(data)))
+                .collect(Collectors.collectingAndThen(Collectors.toMap(data -> data[0], data -> data[1]),
+                        Collections::<String, String>unmodifiableMap));
+        System.out.println(m3);
+
+        Map<String, Integer> m4 = Stream.of(
+                new AbstractMap.SimpleEntry<>("key1", 1),
+                new AbstractMap.SimpleEntry<>("key2", 2))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        System.out.println(m4);
 
     }
 
