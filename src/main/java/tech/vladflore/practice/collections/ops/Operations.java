@@ -12,6 +12,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
@@ -32,7 +33,7 @@ public class Operations {
         System.out.println();
 
         // sorting an array
-        Integer[] myarray = new Integer[]{3, 1, 2, 6, 7, 9, 0, 8, 4, 5};
+        Integer[] myarray = new Integer[] { 3, 1, 2, 6, 7, 9, 0, 8, 4, 5 };
         Arrays.sort(myarray);
         System.out.println(Arrays.toString(myarray));
 
@@ -54,20 +55,20 @@ public class Operations {
         ArrayList<Entry<Integer, String>> entries = new ArrayList<>(map.entrySet());
         Collections.sort(entries, Map.Entry.comparingByKey(Collections.reverseOrder()));
         map = entries.stream().collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue(),
-            (existing, replacement) -> existing, LinkedHashMap::new));
+                (existing, replacement) -> existing, LinkedHashMap::new));
         System.out.println(map);
 
         // sort custom objects
         var random = new Random();
         List<Employee> employees = random.ints(30, 33).limit(5).boxed()
-            .map(age -> new Employee(Operations.shuffle("abc"), age))
-            .collect(Collectors.toList());
+                .map(age -> new Employee(Operations.shuffle("abc"), age))
+                .collect(Collectors.toList());
         Collections.sort(employees, Comparator.comparing(Employee::age).thenComparing(Employee::name));
         System.out.println(employees);
 
         List<List<Integer>> nested = List.of(
-            List.of(1, 2),
-            List.of(3, 4));
+                List.of(1, 2),
+                List.of(3, 4));
 
         List<Integer> flattened = nested.stream().flatMap(Collection::stream).toList();
         System.out.println(flattened);
@@ -75,9 +76,23 @@ public class Operations {
         List<String> names = List.of("vlad", "ioana");
         List<Integer> ages = List.of(36, 33);
         List<Employee> zipped = IntStream.range(0, Math.min(names.size(), ages.size()))
-            .mapToObj(idx -> new Employee(names.get(idx), ages.get(idx)))
-            .toList();
+                .mapToObj(idx -> new Employee(names.get(idx), ages.get(idx)))
+                .toList();
         System.out.println(zipped);
+
+        Employee alex = new Employee("Alex", 23);
+        Employee john = new Employee("John", 40);
+        Employee peter = new Employee("Peter", 32);
+        List<Employee> emps = Arrays.asList(alex, john, peter);
+        Employee youngest = emps.stream().min(Comparator.comparing(Employee::age))
+                .orElseThrow(NoSuchElementException::new);
+        System.out.println(youngest);
+
+        List<Employee> empsUnmodifiable = emps.stream().collect(Collectors.toUnmodifiableList());
+        System.out.println("empsUnmodifiable = " + empsUnmodifiable);
+        List<Employee> empsUnmodifiable2 = emps.stream()
+                .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
+        System.out.println("empsUnmodifiable2 = " + empsUnmodifiable2);
 
         // do not use, it is considered an anti-pattern
         Set<String> unmodifiableSet = Collections.unmodifiableSet(new HashSet<String>() {
@@ -89,15 +104,15 @@ public class Operations {
         });
 
         Set<String> unmodifiableSet1 = Stream.of("one", "two", "three").collect(
-            Collectors.collectingAndThen(Collectors.toSet(), Collections::unmodifiableSet));
+                Collectors.collectingAndThen(Collectors.toSet(), Collections::unmodifiableSet));
 
-        int[] arr = {1, 2, 3, 4, 5};
+        int[] arr = { 1, 2, 3, 4, 5 };
         List<int[]> lst = List.of(arr);
         List<Integer> lst1 = List.of(1, 2, 3, 4, 5);
 
         Map<String, String> m1 = Map.ofEntries(
-            new AbstractMap.SimpleEntry<>("foo", "a"),
-            new AbstractMap.SimpleEntry<>("bar", "b"));
+                new AbstractMap.SimpleEntry<>("foo", "a"),
+                new AbstractMap.SimpleEntry<>("bar", "b"));
 
         // The instances created by factory methods are value-based. This means that
         // factories are free to create a new instance or return an existing instance.
@@ -118,7 +133,6 @@ public class Operations {
         final var partitioned = words.stream().collect(Collectors.partitioningBy(word -> word.startsWith("d")));
         System.out.println(partitioned.get(true));
         System.out.println(partitioned.get(false));
-
     }
 
     static String shuffle(String original) {
